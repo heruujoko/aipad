@@ -42,10 +42,20 @@ Example:
 		// 2. Generate hash for deduplication
 		hash := crypto.GenerateHash(text)
 
-		// 3. Check for duplicates
+		// 3. Check for duplicates (Exact Hash)
 		if crypto.IsDuplicate(hash, s.ContextHashes) {
-			fmt.Println("Duplicate content detected. Skipping addition.")
+			fmt.Println("Duplicate content detected (exact match). Skipping addition.")
 			return
+		}
+
+		// 3.1 Check for duplicates (Fuzzy Match using History)
+		// We use the new ContextHistory field. If it's missing (legacy state), we skip this check or rely on hash.
+		if len(s.ContextHistory) > 0 {
+			isSimilar, similarContent, ratio := crypto.IsSimilar(text, s.ContextHistory, crypto.SimilarityThreshold)
+			if isSimilar {
+				fmt.Printf("Duplicate content detected (%.0f%% similar). Skipping addition.\nSimilar entry: \"%s...\"\n", ratio*100, truncate(similarContent, 50))
+				return
+			}
 		}
 
 		// 4. Append to scratchpad.md
@@ -73,8 +83,9 @@ Example:
 			os.Exit(1)
 		}
 
-		// 5. Update state with new hash
+		// 5. Update state with new hash and content
 		s.ContextHashes = append(s.ContextHashes, hash)
+		s.ContextHistory = append(s.ContextHistory, text) // Store full text for fuzzy matching
 		s.LastSync = time.Now()
 		if err := s.Save(); err != nil {
 			fmt.Printf("Error saving state: %v\n", err)
@@ -87,4 +98,11 @@ Example:
 
 func init() {
 	rootCmd.AddCommand(convoCmd)
+}
+
+func truncate(text string, length int) string {
+	if len(text) <= length {
+		return text
+	}
+	return text[:length] + "..."
 }

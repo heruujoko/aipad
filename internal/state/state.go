@@ -27,6 +27,7 @@ type State struct {
 	CreatedAt       time.Time                 `json:"created_at"`
 	LastSync        time.Time                 `json:"last_sync"`
 	ContextHashes   []string                  `json:"context_hashes"`
+	ContextHistory  []string                  `json:"context_history"`
 	Providers       map[string]ProviderConfig `json:"providers"`
 }
 
@@ -72,6 +73,7 @@ func NewState(provider string) *State {
 		CreatedAt:       time.Now(),
 		LastSync:        time.Now(),
 		ContextHashes:   []string{},
+		ContextHistory:  []string{},
 		Providers: map[string]ProviderConfig{
 			"claude": {
 				ConfigFile: "CLAUDE.md",
