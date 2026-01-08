@@ -58,7 +58,45 @@ aipad/
 Config files (CLAUDE.md, AGENTS.md) use marker-based updates to preserve user content:
 ```markdown
 <!-- AIPAD_CONTEXT_START -->
-[Dynamic aipad-managed content goes here]
+## AIPad Context Management
+
+This project uses **AIPad** for context switching between AI assistants.
+
+### How to Save Context
+When you complete a significant task or conversation milestone, save the context using:
+```bash
+./aipad convo "Summary of what was accomplished"
+```
+
+### When to Save
+- After completing a feature or bug fix
+- Before switching to a different topic
+- When the user requests a context save
+- At natural conversation breakpoints
+
+### Reading Context
+The shared scratchpad is located at `.aipad/scratchpad.md`. Review it to understand prior context.
+
+## Current Session Context
+
+
+## [2026-01-08 23:25:43] Context Update
+The project uses Go and Cobra for CLI development.
+---
+
+## [2026-01-08 23:26:29] Context Update
+We are also using SHA256 for hashing.
+---
+
+## [2026-01-08 23:27:26] Context Update
+Implemented fuzzy matching for deduplication:
+- Added Levenshtein distance and similarity ratio logic in internal/crypto.
+- Updated State struct to store ContextHistory (raw text) for similarity checks.
+- Updated aipad convo to check for exact hash match AND >80% similarity.
+- Added comprehensive unit tests for crypto package.
+- Verified functionality with local tests (exact match rejection + fuzzy match rejection).
+---
+
 <!-- AIPAD_CONTEXT_END -->
 ```
 This prevents destructive edits when syncing context between AI platforms.
@@ -134,4 +172,43 @@ When switching between AI assistants, AIPad maintains:
 MIT License - See LICENSE file for details.
 
 <!-- AIPAD_CONTEXT_START -->
+## AIPad Context Management
+
+This project uses **AIPad** for context switching between AI assistants.
+
+### How to Save Context
+When you complete a significant task or conversation milestone, save the context using:
+```bash
+./aipad convo "Summary of what was accomplished"
+```
+
+### When to Save
+- After completing a feature or bug fix
+- Before switching to a different topic
+- When the user requests a context save
+- At natural conversation breakpoints
+
+### Reading Context
+The shared scratchpad is located at `.aipad/scratchpad.md`. Review it to understand prior context.
+
+## Current Session Context
+
+
+## [2026-01-08 23:25:43] Context Update
+The project uses Go and Cobra for CLI development.
+---
+
+## [2026-01-08 23:26:29] Context Update
+We are also using SHA256 for hashing.
+---
+
+## [2026-01-08 23:27:26] Context Update
+Implemented fuzzy matching for deduplication:
+- Added Levenshtein distance and similarity ratio logic in internal/crypto.
+- Updated State struct to store ContextHistory (raw text) for similarity checks.
+- Updated aipad convo to check for exact hash match AND >80% similarity.
+- Added comprehensive unit tests for crypto package.
+- Verified functionality with local tests (exact match rejection + fuzzy match rejection).
+---
+
 <!-- AIPAD_CONTEXT_END -->

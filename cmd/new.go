@@ -11,6 +11,7 @@ import (
 var validProviders = map[string]bool{
 	"claude":      true,
 	"antigravity": true,
+	"ag":          true,
 }
 
 // newCmd represents the new command
@@ -18,7 +19,7 @@ var newCmd = &cobra.Command{
 	Use:   "new <provider>",
 	Short: "Initialize a new AIPad session",
 	Long: `Initialize a new AIPad session with a specific AI provider.
-Valid providers are: claude, antigravity.
+Valid providers are: claude, antigravity, ag.
 
 This command will:
 - Create the .aipad/ directory
@@ -31,7 +32,7 @@ This command will:
 		}
 		provider := args[0]
 		if !validProviders[provider] {
-			return fmt.Errorf("unsupported provider: '%s'. Valid providers are: claude, antigravity", provider)
+			return fmt.Errorf("unsupported provider: '%s'. Valid providers are: claude, antigravity, ag", provider)
 		}
 		return nil
 	},

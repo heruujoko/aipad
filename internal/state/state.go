@@ -83,6 +83,10 @@ func NewState(provider string) *State {
 				ConfigFile: "AGENTS.md",
 				RulesDir:   ".agent/rules/",
 			},
+			"ag": {
+				ConfigFile: "AGENTS.md",
+				RulesDir:   ".agent/rules/",
+			},
 		},
 	}
 }
@@ -118,6 +122,16 @@ func Load() (*State, error) {
 	err = json.Unmarshal(data, &s)
 	if err != nil {
 		return nil, err
+	}
+
+	// Backward compatibility: ensure ag provider exists if antigravity exists
+	if s.Providers == nil {
+		s.Providers = make(map[string]ProviderConfig)
+	}
+	if _, ok := s.Providers["antigravity"]; ok {
+		if _, ok := s.Providers["ag"]; !ok {
+			s.Providers["ag"] = s.Providers["antigravity"]
+		}
 	}
 
 	return &s, nil
