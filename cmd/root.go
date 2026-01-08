@@ -6,10 +6,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Version is set at build time via ldflags
+var Version = "dev"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "aipad",
-	Short: "AIPad manages context switching between AI assistants",
+	Use:     "aipad",
+	Short:   "AIPad manages context switching between AI assistants",
+	Version: Version,
 	Long: `AIPad is a CLI tool that manages context switching between different AI assistants 
 (Claude, Antigravity, etc.) by preserving conversation context and syncing 
 configuration files across different AI platforms.`,
@@ -33,8 +37,4 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.aipad.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
