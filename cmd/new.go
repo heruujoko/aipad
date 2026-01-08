@@ -31,8 +31,10 @@ This command will:
 			return fmt.Errorf("requires exactly one argument: <provider>")
 		}
 		provider := args[0]
-		if !validProviders[provider] {
-			return fmt.Errorf("unsupported provider: '%s'. Valid providers are: claude, antigravity, ag", provider)
+		// Check if provider exists in the builtin or custom providers
+		s := state.NewState("claude")
+		if _, ok := s.Providers[provider]; !ok {
+			return fmt.Errorf("unsupported provider: '%s'. Use 'aipad providers list' to see available providers", provider)
 		}
 		return nil
 	},

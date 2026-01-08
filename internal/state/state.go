@@ -1,6 +1,7 @@
 package state
 
 import (
+	"aipad/internal/config"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -64,6 +65,43 @@ func EnsureScratchpad() error {
 	return nil
 }
 
+// getBuiltinProviders returns the builtin provider configurations
+func getBuiltinProviders() map[string]ProviderConfig {
+	return map[string]ProviderConfig{
+		"claude": {
+			ConfigFile: "CLAUDE.md",
+			RulesDir:   ".claude/rules/",
+		},
+		"antigravity": {
+			ConfigFile: "AGENTS.md",
+			RulesDir:   ".agent/rules/",
+		},
+		"ag": {
+			ConfigFile: "AGENTS.md",
+			RulesDir:   ".agent/rules/",
+		},
+	}
+}
+
+// getAllProviders returns builtin providers merged with custom providers
+func getAllProviders() map[string]ProviderConfig {
+	// Start with builtin providers
+	providers := getBuiltinProviders()
+
+	// Load and merge custom providers
+	customProviders, err := config.GetCustomProviderConfigMap()
+	if err == nil {
+		for name, customConfig := range customProviders {
+			providers[name] = ProviderConfig{
+				ConfigFile: customConfig.ConfigFile,
+				RulesDir:   customConfig.RulesDir,
+			}
+		}
+	}
+
+	return providers
+}
+
 // NewState creates a default state object
 func NewState(provider string) *State {
 	return &State{
@@ -74,20 +112,7 @@ func NewState(provider string) *State {
 		LastSync:        time.Now(),
 		ContextHashes:   []string{},
 		ContextHistory:  []string{},
-		Providers: map[string]ProviderConfig{
-			"claude": {
-				ConfigFile: "CLAUDE.md",
-				RulesDir:   ".claude/rules/",
-			},
-			"antigravity": {
-				ConfigFile: "AGENTS.md",
-				RulesDir:   ".agent/rules/",
-			},
-			"ag": {
-				ConfigFile: "AGENTS.md",
-				RulesDir:   ".agent/rules/",
-			},
-		},
+		Providers:       getAllProviders(),
 	}
 }
 
@@ -131,6 +156,15 @@ func Load() (*State, error) {
 	if _, ok := s.Providers["antigravity"]; ok {
 		if _, ok := s.Providers["ag"]; !ok {
 			s.Providers["ag"] = s.Providers["antigravity"]
+		}
+	}
+
+	// Merge with current providers (builtin + custom)
+	// This ensures that new providers added via config are available
+	currentProviders := getAllProviders()
+	for name, config := range currentProviders {
+		if _, exists := s.Providers[name]; !exists {
+			s.Providers[name] = config
 		}
 	}
 
