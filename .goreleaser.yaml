@@ -48,3 +48,18 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+
+brews:
+  - name: aipad
+    repository:
+      owner: heruujoko
+      name: homebrew-tap
+    directory: Formula
+    homepage: "https://github.com/heruujoko/aipad"
+    description: "AIPad manages context switching between AI assistants"
+    license: "MIT"
+    test: |
+      system "#{bin}/aipad --version"
+    install: |
+      bin.install "aipad"
+
