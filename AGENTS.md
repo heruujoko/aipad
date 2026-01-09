@@ -65,7 +65,7 @@ This project uses **AIPad** for context switching between AI assistants.
 ### How to Save Context
 When you complete a significant task or conversation milestone, save the context using:
 ```bash
-./aipad convo "Summary of what was accomplished"
+aipad convo "Summary of what was accomplished"
 ```
 
 ### When to Save
@@ -196,7 +196,7 @@ This project uses **AIPad** for context switching between AI assistants.
 ### How to Save Context
 When you complete a significant task or conversation milestone, save the context using:
 ```bash
-./aipad convo "Summary of what was accomplished"
+aipad convo "Summary of what was accomplished"
 ```
 
 ### When to Save
