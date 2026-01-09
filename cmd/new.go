@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"aipad/internal/state"
+	syncpkg "aipad/internal/sync"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -66,26 +68,45 @@ This command will:
 		// 4. Create provider-specific config if missing
 		// Note from specs: "Set up provider-specific configuration file if it doesn't exist"
 		providerConfig := s.Providers[provider]
-		err := ensureFileExists(providerConfig.ConfigFile)
-		if err != nil {
-			fmt.Printf("Error creating provider config %s: %v\n", providerConfig.ConfigFile, err)
+		configPath := providerConfig.ConfigFile // Config file is relative to cwd
+
+		// Create file if it doesn't exist, populated with Agent Awareness instructions
+		if err := ensureConfigFileWithInstructions(configPath); err != nil {
+			fmt.Printf("Error ensuring provider config %s: %v\n", configPath, err)
 			os.Exit(1)
 		}
-		fmt.Printf("Ensured provider config exists: %s\n", providerConfig.ConfigFile)
+		fmt.Printf("Ensured provider config exists: %s\n", configPath)
+
+		// 5. Initial Sync: Ensure the config file has the current scratchpad content (likely empty or just init)
+		// This also ensures the managed block structure is correct even if the file existed but was empty/malformed
+		cwd, err := os.Getwd()
+		if err != nil {
+			fmt.Printf("Error getting current directory: %v\n", err)
+			os.Exit(1)
+		}
+		scratchpadPath := filepath.Join(cwd, state.AIPadDir, state.ScratchpadFile)
+
+		if err := syncpkg.SyncProviderConfig(configPath, scratchpadPath); err != nil {
+			fmt.Printf("Error syncing initial context to config: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Synced initial context to %s\n", configPath)
 
 		fmt.Printf("Successfully started session! You are now using: %s\n", provider)
 	},
 }
 
-func ensureFileExists(filename string) error {
+func ensureConfigFileWithInstructions(filename string) error {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
+		// Create with basic header, SyncProviderConfig will fill in the managed block
 		file, err := os.Create(filename)
 		if err != nil {
 			return err
 		}
 		defer file.Close()
-		// Optionally write a header
-		_, err = file.WriteString(fmt.Sprintf("# %s Configuration\n", filename))
+
+		// Write a minimal header
+		_, err = file.WriteString(fmt.Sprintf("# %s Configuration\n\n", filename))
 		return err
 	}
 	return nil
