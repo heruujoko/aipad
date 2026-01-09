@@ -13,11 +13,20 @@ AIPad is a powerful context management tool designed for developers working with
 
 ## 🛠 Installation
 
+### Via Homebrew (Preferred)
+
+```bash
+brew tap heruujoko/tap
+brew install aipad
+```
+
+### From Source
+
 Ensuring you have Go installed on your system:
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/heruujoko/aipad.git
 cd aipad
 
 # Build the binary
